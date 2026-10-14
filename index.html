@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para o Meu Grande Amor | Pedido Especial</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        romantic: {
+                            50: '#fff5f6',
+                            100: '#ffe6e9',
+                            200: '#fcd0d7',
+                            300: '#f7aab7',
+                            400: '#f0768e',
+                            500: '#e34768',
+                            600: '#cf2b50',
+                            700: '#ad1e3f',
+                            800: '#901c38',
+                            900: '#7a1b33',
+                        },
+                        gold: {
+                            300: '#f3e5ab',
+                            400: '#e6ca65',
+                            500: '#d4af37',
+                            600: '#aa8c2c',
+                        },
+                        cream: '#fdfbf7',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                        cursive: ['"Dancing Script"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Keyframes and Utility Styles */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            animation: floatUp 8s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.6);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .glass-dark {
+            background: rgba(122, 27, 51, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(247, 170, 183, 0.2);
+        }
+
+        /* Pulse glowing effect for button */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(227, 71, 104, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(227, 71, 104, 0.8); }
+        }
+
+        .glow-button {
+            animation: pulseGlow 2.5s infinite;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fdfbf7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f7aab7;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e34768;
+        }
+    </style>
+</head>
+<body class="bg-cream text-gray-800 font-sans antialiased overflow-x-hidden selection:bg-romantic-200 selection:text-romantic-800">
+
+    <!-- Efeito de Fundo: Pétalas/Corações Flutuantes -->
+    <div id="hearts-container" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- Painel de Personalização de Mídia (Flutuante para o Marido Configurar) -->
+    <div id="media-customizer" class="fixed bottom-4 left-4 z-50">
+        <button onclick="toggleCustomizer()" class="bg-gray-900/80 hover:bg-gray-900 text-white p-3 rounded-full shadow-2xl transition duration-300 border border-gray-700 flex items-center gap-2 group text-xs sm:text-sm">
+            <i class="fa-solid fa-gear text-gold-400 group-hover:rotate-90 transition duration-500">
+            </i>
+            <span class="hidden sm:inline">Personalizar Fotos e Músicas</span>
+        </button>
+        
+        <div id="customizer-panel" class="hidden absolute bottom-14 left-0 w-80 sm:w-96 glass-card p-5 rounded-2xl shadow-2xl border border-romantic-200 text-xs sm:text-sm max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-romantic-100">
+                <h4 class="font-serif font-bold text-romantic-800 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-romantic-500"></i> Trocar Fotos e Áudios
+                </h4>
+                <button onclick="toggleCustomizer()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <p class="text-gray-600 text-xs mb-4">Você pode carregar suas fotos e músicas reais direto do seu computador/celular sem precisar de servidor!</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Foto da Faculdade (Ato 2)</label>
+                    <input type="file" accept="image/*" onchange="updateImage(event, 'img-faculdade')" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-romantic-100 file:text-romantic-700 hover:file:bg-romantic-200">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Sua Foto Cozinhando (Ato 3)</label>
+                    <input type="file" accept="image/*" onchange="updateImage(event, 'img-cozinha')" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-romantic-100 file:text-romantic-700 hover:file:bg-romantic-200">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Foto dos Filhos (6 e 3 anos) (Ato 4)</label>
+                    <input type="file" accept="image/*" onchange="updateImage(event, 'img-filhos')" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-romantic-100 file:text-romantic-700 hover:file:bg-romantic-200">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Foto do Casal (Ato 5)</label>
+                    <input type="file" accept="image/*" onchange="updateImage(event, 'img-casal')" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-romantic-100 file:text-romantic-700 hover:file:bg-romantic-200">
+                </div>
+                <hr class="border-romantic-100">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Áudio do SEU Gosto Musical (.mp3)</label>
+                    <input type="file" accept="audio/*" onchange="updateAudio(event, 'audio-dele')" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-romantic-100 file:text-romantic-700 hover:file:bg-romantic-200">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Áudio do GOSTO DELA (.mp3)</label>
+                    <input type="file" accept="audio/*" onchange="updateAudio(event, 'audio-dela')" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-romantic-100 file:text-romantic-700 hover:file:bg-romantic-200">
+                </div>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-3 text-center">As fotos carregadas duram durante esta sessão do seu navegador.</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative z-10 max-w-4xl mx-auto px-4 py-8 space-y-24 sm:space-y-32">
+
+        <!-- ATO 1: ABERTURA -->
+        <section id="ato1" class="min-h-[85vh] flex flex-col justify-center items-center text-center relative pt-8">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-romantic-100 text-romantic-700 text-xs sm:text-sm font-semibold tracking-wide uppercase mb-6 shadow-sm border border-romantic-200">
+                <i class="fa-solid fa-heart animate-pulse text-romantic-500"></i> Comunicado Urgente do Seu Marido
+            </div>
+
+            <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-bold text-gray-900 leading-tight mb-6">
+                Errei no calendário... <br>
+                <span class="font-cursive text-romantic-600 text-5xl sm:text-7xl md:text-8xl block mt-2 font-normal">
+                    Mas nunca no meu amor por você!
+                </span>
+            </h1>
+
+            <p class="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto font-light leading-relaxed mb-10">
+                Sei que a data do nosso aniversário de casamento deu um "bug" na minha memória... mas saiba que a nossa história vive gravada no meu coração todos os segundos do dia.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md">
+                <a href="#ato2" class="glow-button w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-romantic-500 to-romantic-700 text-white rounded-full font-bold text-base sm:text-lg shadow-xl hover:from-romantic-600 hover:to-romantic-800 transition duration-300 flex items-center justify-center gap-3 group">
+                    <span>Clique para ver a minha defesa (e o meu amor)</span>
+                    <i class="fa-solid fa-arrow-down group-hover:translate-y-1 transition duration-300"></i>
+                </a>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-gray-400 animate-bounce">
+                <i class="fa-solid fa-chevron-down text-xl"></i>
+            </div>
+        </section>
+
+
+        <!-- ATO 2: A FACULDADE -->
+        <section id="ato2" class="scroll-mt-12">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl border border-romantic-100 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-romantic-200 rounded-full blur-3xl opacity-50"></div>
+                
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <span class="text-romantic-600 font-serif italic text-lg sm:text-xl">Aonde Tudo Começou...</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mt-1">Nos Tempos de Faculdade</h2>
+                    <div class="w-16 h-1 bg-romantic-400 mx-auto my-4 rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <!-- Foto da época da faculdade -->
+                    <div class="relative group">
+                        <div class="absolute -inset-2 bg-gradient-to-r from-romantic-300 to-gold-300 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
+                        <div class="relative overflow-hidden rounded-2xl shadow-xl aspect-4/3 bg-gray-100">
+                            <img id="img-faculdade" src="nos1.jpg" alt="Tempos de Faculdade" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4">
+                                <span class="text-white text-xs font-medium bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
+                                    <i class="fa-solid fa-graduation-cap text-gold-400 mr-1"></i> Faculdade & O Início
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Texto de recordação -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-romantic-600">
+                            <i class="fa-solid fa-book-bookmark text-2xl"></i>
+                            <h3 class="font-serif font-bold text-xl text-gray-800">Dividindo Cadernos, Xerocs e Sonhos</h3>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed text-sm sm:text-base">
+                            Entre aulas intermináveis, provas difíceis e conversas nos corredores, talvez agumas idas para outros lugures tbm kkkk, foi na faculdade que o nosso capítulo mais bonito começou.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed text-sm sm:text-base">
+                            Quem diria que aqueles dois estudantes dividindo anotações estariam hoje construindo uma vida inteira juntos? Ali eu já sabia: você era e sempre seria a minha melhor escolha.
+                        </p>
+                        <div class="p-4 bg-romantic-50/80 rounded-xl border border-romantic-200/60">
+                            <p class="font-cursive text-xl text-romantic-800">
+                                "O diploma mais importante que tirei da faculdade foi o seu coração."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ATO 3: OPOSTOS & TEMPERO -->
+        <section id="ato3" class="scroll-mt-12 space-y-12">
+            <div class="text-center max-w-2xl mx-auto">
+                <span class="text-romantic-600 font-serif italic text-lg sm:text-xl">Nossa Mistura Perfeita</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mt-1">Opostos que se Completam</h2>
+                <div class="w-16 h-1 bg-romantic-400 mx-auto my-4 rounded-full"></div>
+            </div>
+
+            <!-- Bloco Musical (Gostos Diferentes) -->
+            <div class="glass-dark rounded-3xl p-6 sm:p-10 shadow-2xl text-white relative overflow-hidden">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+                    <div>
+                        <span class="text-gold-400 text-xs font-semibold tracking-wider uppercase">Harmonia em Ritmos Diferentes</span>
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold mt-1">Nossos Gostos Musicais</h3>
+                        <p class="text-romantic-100 text-xs sm:text-sm mt-2 max-w-lg">
+                            Dizem que os opostos se atraem. No nosso fone de ouvido isso é uma verdade absoluta! Mas quando juntamos os dois sons, sai a melhor playlist da vida.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-xs text-romantic-200">
+                        <i class="fa-solid fa-music text-gold-400 animate-bounce"></i> Teste o Player Abaixo
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Player dele -->
+                    <div class="bg-black/30 rounded-2xl p-5 border border-white/10 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs text-gold-400 font-semibold uppercase tracking-wider"><i class="fa-solid fa-headphones mr-1"></i> O Meu Som</span>
+                                <span class="text-[10px] bg-white/10 px-2 py-0.5 rounded text-gray-300">Meu Estilo</span>
+                            </div>
+                            <h4 class="font-bold text-base sm:text-lg mb-1">Música / Estilo Dele</h4>
+                            <p class="text-xs text-gray-300 italic mb-4">Aquele ritmo que você me aguenta ouvir no carro...</p>
+                        </div>
+                        <audio id="audio-dele" class="w-full h-10 rounded" controls>
+                            <source src="lucky.mpeg" type="audio/mpeg">
+                            Seu navegador não suporta áudio.
+                        </audio>
+                    </div>
+
+                    <!-- Player dela -->
+                    <div class="bg-black/30 rounded-2xl p-5 border border-romantic-400/30 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs text-romantic-300 font-semibold uppercase tracking-wider"><i class="fa-solid fa-heart mr-1"></i> O Som Dela</span>
+                                <span class="text-[10px] bg-romantic-500/30 px-2 py-0.5 rounded text-romantic-200">Sua Playlist</span>
+                            </div>
+                            <h4 class="font-bold text-base sm:text-lg mb-1">Música / Estilo Dela</h4>
+                            <p class="text-xs text-romantic-200 italic mb-4">A trilha sonora perfeita do seu coração...</p>
+                        </div>
+                        <audio id="audio-dela" class="w-full h-10 rounded" controls>
+                            <source src="bj.mpeg" type="audio/mpeg">
+                            Seu navegador não suporta áudio.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloco Culinário (O Chefe da Casa) -->
+            <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-xl border border-romantic-100 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="order-2 md:order-1 space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-300/30 text-gold-600 text-xs font-semibold">
+                        <i class="fa-solid fa-utensils"></i> O Chefe da Casa
+                    </div>
+                    <h3 class="font-serif text-2xl sm:text-3xl font-bold text-gray-900">Eu com os Temperos, Você com a Doçura</h3>
+                    <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                        Pode deixar que do fogão, das panelas e dos temperos da nossa casa eu cuido com todo carinho! Cozinhar pra você e pros nossos filhos é uma das minhas formas favoritas de dizer "eu te amo".
+                    </p>
+                    <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                        E você traz o tempero especial que nenhuma receita compra: a doçura e a leveza da nossa rotina.
+                    </p>
+                </div>
+
+                <div class="order-1 md:order-2 relative group">
+                    <div class="relative overflow-hidden rounded-2xl shadow-xl aspect-4/3 bg-gray-100">
+                        <img id="img-cozinha" src="masterchef.jpg" alt="Cozinhando com amor" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end p-4">
+                            <span class="text-white text-xs font-medium">
+                                <i class="fa-solid fa-fire-burner text-gold-400 mr-1"></i> Sempre pronto pra preparar seu prato favorito
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ATO 4: NOSSA FAMÍLIA -->
+        <section id="ato4" class="scroll-mt-12">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl border border-romantic-100 text-center relative">
+                <span class="text-romantic-600 font-serif italic text-lg sm:text-xl">O Nosso Maior Tesouro</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mt-1 mb-2">A Família que Construímos</h2>
+                <p class="text-gray-600 max-w-xl mx-auto text-sm sm:text-base mb-8">
+                    Olha onde o nosso amor nos trouxe... Do sonho de faculdade para a realidade mais linda do mundo!
+                </p>
+
+                <!-- Foto dos Filhos -->
+                <div class="max-w-2xl mx-auto relative group mb-8">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-romantic-400 via-gold-400 to-romantic-500 rounded-3xl blur opacity-60 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="relative overflow-hidden rounded-2xl shadow-2xl bg-gray-100 aspect-16/9">
+                        <img id="img-filhos" src="filhos.jpg" alt="Nossos Filhos" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                    </div>
+                </div>
+
+                <!-- Destaques dos Filhos -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
+                    <div class="bg-romantic-50 p-4 rounded-2xl border border-romantic-200/80 flex items-center gap-4 text-left">
+                        <div class="w-12 h-12 rounded-full bg-romantic-200 text-romantic-700 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm sm:text-base">Nossa Princesa (6 anos)</h4>
+                            <p class="text-xs text-gray-600">Cheia de graça, esperteza e a doçura da mãe.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-romantic-50 p-4 rounded-2xl border border-romantic-200/80 flex items-center gap-4 text-left">
+                        <div class="w-12 h-12 rounded-full bg-gold-300/50 text-gold-700 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-child"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm sm:text-base">Nosso Garotão (3 anos)</h4>
+                            <p class="text-xs text-gray-600">Energia pura, sorrisos sinceros e nossa alegria cotidiana.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ATO 5: O PEDIDO DE PERDÃO E RECOMPENSA -->
+        <section id="ato5" class="scroll-mt-12 text-center">
+            <div class="glass-dark rounded-3xl p-8 sm:p-12 shadow-2xl text-white relative overflow-hidden border border-romantic-400/40">
+                
+                <!-- Foto do Casal -->
+                <div class="w-28 h-28 sm:w-36 sm:h-36 mx-auto rounded-full p-1 bg-gradient-to-tr from-gold-400 to-romantic-400 shadow-2xl mb-6">
+                    <img id="img-casal" src="nos2.jpg" alt="Nós dois" class="w-full h-full object-cover rounded-full">
+                </div>
+
+                <span class="text-gold-300 font-serif italic text-lg sm:text-xl">O Veredito Final</span>
+                <h2 class="font-serif text-3xl sm:text-5xl font-bold mt-2 mb-4">Você Me Perdoa, Meu Amor?</h2>
+                
+                <p class="text-romantic-100 max-w-xl mx-auto text-sm sm:text-base leading-relaxed mb-8 font-light">
+                    Prometo que a data do calendário eu nunca mais esqueço... mas mais importante: prometo continuar te amando, cuidando da nossa família e cozinhando pra você por todos os dias da minha vida!
+                </p>
+
+                <!-- Botões de Ação Interativos -->
+                <div class="relative min-h-[140px] flex flex-col sm:flex-row items-center justify-center gap-6 max-w-lg mx-auto">
+                    <!-- Botão do SIM -->
+                    <button onclick="aceitouPerdao()" class="glow-button w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-full font-bold text-lg shadow-2xl transition duration-300 transform hover:scale-105 flex items-center justify-center gap-3 z-20">
+                        <i class="fa-solid fa-heart text-white text-xl animate-bounce"></i>
+                        <span>SIM, EU PERDOO!</span>
+                    </button>
+
+                    <!-- Botão Falso de "Vou Pensar" (Foge do cursor/toque) -->
+                    <button id="btn-fugitivo" onmouseover="fugirBotao()" onclick="fugirBotao()" class="w-full sm:w-auto px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full font-medium text-sm border border-white/30 transition-all duration-200 z-10 whitespace-nowrap">
+                        Vou pensar... <i class="fa-solid fa-face-grimace ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-8 text-xs text-gray-500 font-light relative z-10">
+        <p>Feito com todo o amor do mundo para a esposa mais incrível do universo. ❤️</p>
+    </footer>
+
+
+    <!-- MODAL DOS CUPONS DE RECOMPENSA (Abre ao clicar no SIM) -->
+    <div id="modal-cupons" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-romantic-200 max-h-[90vh] overflow-y-auto relative animate-bounce-short">
+            
+            <button onclick="fecharModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-romantic-100 text-romantic-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-3 shadow-inner">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <h3 class="font-serif text-2xl sm:text-3xl font-bold text-gray-900">Eeeeebaaaa! 🎉❤️</h3>
+                <p class="text-romantic-600 font-medium text-sm sm:text-base mt-1">Sua generosidade merece recompensas à altura!</p>
+                <p class="text-gray-500 text-xs mt-1">Aqui estão seus **Cupons Especiais de Aniversário** para resgatar quando quiser:</p>
+            </div>
+
+            <!-- Lista de Cupons -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                <!-- Cupom 1 -->
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-romantic-50 to-pink-50 border-2 border-dashed border-romantic-300 relative group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-romantic-700 bg-romantic-200 px-2 py-0.5 rounded-full uppercase">VIP Exclusivo</span>
+                            <h4 class="font-bold text-gray-800 text-base mt-2">Jantar Especial de Chef</h4>
+                            <p class="text-xs text-gray-600 mt-1">Menu completo preparado por mim com entrada, prato principal e sobremesa favorita.</p>
+                        </div>
+                        <i class="fa-solid fa-utensils text-romantic-400 text-2xl"></i>
+                    </div>
+                    <button onclick="resgatarCupom(this, 'Jantar Especial de Chef')" class="mt-4 w-full py-2 bg-romantic-600 text-white rounded-xl text-xs font-bold shadow hover:bg-romantic-700 transition">
+                        Resgatar Cupom
+                    </button>
+                </div>
+
+                <!-- Cupom 2 -->
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-gold-100/50 border-2 border-dashed border-gold-400 relative group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-gold-800 bg-gold-300 px-2 py-0.5 rounded-full uppercase">Passe Livre</span>
+                            <h4 class="font-bold text-gray-800 text-base mt-2">Noite Livre sem Louça</h4>
+                            <p class="text-xs text-gray-600 mt-1">Zero louça ou tarefas da cozinha para você por um fim de semana inteiro.</p>
+                        </div>
+                        <i class="fa-solid fa-sink text-gold-600 text-2xl"></i>
+                    </div>
+                    <button onclick="resgatarCupom(this, 'Noite Livre sem Louça')" class="mt-4 w-full py-2 bg-gold-500 text-white rounded-xl text-xs font-bold shadow hover:bg-gold-600 transition">
+                        Resgatar Cupom
+                    </button>
+                </div>
+
+                <!-- Cupom 3 -->
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-dashed border-purple-300 relative group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-purple-700 bg-purple-200 px-2 py-0.5 rounded-full uppercase">Relaxamento</span>
+                            <h4 class="font-bold text-gray-800 text-base mt-2">Sessão Spa & Massagem</h4>
+                            <p class="text-xs text-gray-600 mt-1">Massagem relaxante com óleos essenciais e pés para cima sem interrupções.</p>
+                        </div>
+                        <i class="fa-solid fa-spa text-purple-400 text-2xl"></i>
+                    </div>
+                    <button onclick="resgatarCupom(this, 'Sessão Spa & Massagem')" class="mt-4 w-full py-2 bg-purple-600 text-white rounded-xl text-xs font-bold shadow hover:bg-purple-700 transition">
+                        Resgatar Cupom
+                    </button>
+                </div>
+
+                <!-- Cupom 4 -->
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-romantic-100 border-2 border-dashed border-rose-400 relative group">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-rose-700 bg-rose-200 px-2 py-0.5 rounded-full uppercase">A Dois</span>
+                            <h4 class="font-bold text-gray-800 text-base mt-2">Passeio Romântico Noturno</h4>
+                            <p class="text-xs text-gray-600 mt-1">Um encontro especial só para nós dois, revivendo os tempos de namoro.</p>
+                        </div>
+                        <i class="fa-solid fa-glass-cheers text-rose-500 text-2xl"></i>
+                    </div>
+                    <button onclick="resgatarCupom(this, 'Passeio Romântico Noturno')" class="mt-4 w-full py-2 bg-rose-600 text-white rounded-xl text-xs font-bold shadow hover:bg-rose-700 transition">
+                        Resgatar Cupom
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button onclick="fecharModal()" class="px-6 py-2 bg-gray-900 text-white rounded-full text-xs font-medium hover:bg-gray-800 transition">
+                    Fechar e Me Dar um Abraço ❤️
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // 1. Efeito Visual de Pétalas/Corações Flutuantes
+        function createFloatingHearts() {
+            const container = document.getElementById('hearts-container');
+            const icons = ['fa-heart', 'fa-sparkles', 'fa-heart font-light'];
+            const colors = ['#f0768e', '#fcd0d7', '#d4af37', '#cf2b50'];
+
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('i');
+                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                heart.className = `fa-solid ${randomIcon} floating-heart`;
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDuration = `${6 + Math.random() * 6}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                heart.style.fontSize = `${12 + Math.random() * 20}px`;
+                heart.style.color = randomColor;
+
+                container.appendChild(heart);
+            }
+        }
+        createFloatingHearts();
+
+        // 2. Botão "Vou pensar..." Fuga Divertida
+        let escapeCount = 0;
+        function fugirBotao() {
+            const btn = document.getElementById('btn-fugitivo');
+            escapeCount++;
+
+            if (escapeCount > 5) {
+                btn.innerText = "Tá bom, não tem como fugir! 😂";
+                btn.onclick = aceitouPerdao;
+                btn.style.transform = "none";
+                btn.style.position = "static";
+                return;
+            }
+
+            // Posição aleatória na tela de forma amigável
+            const randomX = (Math.random() - 0.5) * 260;
+            const randomY = (Math.random() - 0.5) * 160;
+
+            btn.style.position = 'relative';
+            btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        // 3. Ação do Botão SIM (Confetes e Abertura do Modal)
+        function aceitouPerdao() {
+            // Efeito de Confetes Elegante
+            const count = 200;
+            const defaults = {
+                origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+                colors: ['#e34768', '#d4af37']
+            });
+            fire(0.2, {
+                spread: 60,
+                colors: ['#ffffff', '#fcd0d7']
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                colors: ['#e34768', '#f0768e', '#d4af37']
+            });
+
+            // Abrir Modal
+            document.getElementById('modal-cupons').classList.remove('hidden');
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-cupons').classList.add('hidden');
+        }
+
+        // 4. Resgate de Cupons
+        function resgatarCupom(btnElement, nomeCupom) {
+            btnElement.disabled = true;
+            btnElement.className = "mt-4 w-full py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow flex items-center justify-center gap-2 cursor-default";
+            btnElement.innerHTML = `<i class="fa-solid fa-check"></i> Cupom Resgatado!`;
+        }
+
+        // 5. Painel de Customização de Mídia (Upload local temporário)
+        function toggleCustomizer() {
+            const panel = document.getElementById('customizer-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        function updateImage(event, targetId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(targetId).src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateAudio(event, targetId) {
+            const file = event.target.files[0];
+            if (file) {
+                const audioPlayer = document.getElementById(targetId);
+                audioPlayer.src = URL.createObjectURL(file);
+                audioPlayer.load();
+            }
+        }
+    </script>
+</body>
+</html>
